@@ -1,0 +1,5 @@
+/node-2025.iml
+/.idea/
+dist
+.env
+node_modules
