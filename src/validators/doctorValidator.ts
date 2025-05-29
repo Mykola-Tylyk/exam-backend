@@ -8,4 +8,9 @@ export class DoctorValidator {
         name: this.name.required(),
         surname: this.surname.required(),
     });
+
+    public static update = joi.object({
+        name: this.name.required(),
+        surname: this.surname.required(),
+    });
 }

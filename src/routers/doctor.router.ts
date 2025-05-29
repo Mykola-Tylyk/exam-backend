@@ -1,23 +1,32 @@
 import { Router } from "express";
 
-import { doctorController } from "../controllers/doctor.controller";
+import { controller } from "../controllers/controller";
 import { commonMiddleware } from "../middlewares/common.middleware";
-import { DoctorValidator } from "../validators/doctor.validator";
+import { DoctorValidator } from "../validators/doctorValidator";
 
 const router = Router();
 
-router.get("/", doctorController.getAll);
+router.get("/", controller.getAll);
 
 router.post(
     "/",
     commonMiddleware.validateBody(DoctorValidator.create),
-    doctorController.create,
+    controller.create,
 );
 
-router.get("/:id", doctorController.getById);
+router.get("/:id", commonMiddleware.isIdValidate("id"), controller.getById);
 
-router.put("/:id", doctorController.updateById);
+router.put(
+    "/:id",
+    commonMiddleware.isIdValidate("id"),
+    commonMiddleware.validateBody(DoctorValidator.update),
+    controller.updateById,
+);
 
-router.delete("/:id", doctorController.deleteById);
+router.delete(
+    "/:id",
+    commonMiddleware.isIdValidate("id"),
+    controller.deleteById,
+);
 
 export const doctorRouter = router;

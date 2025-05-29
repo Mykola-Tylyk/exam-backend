@@ -5,12 +5,12 @@ import {
     IDoctorCreateDTO,
     IDoctorUpdateDTO,
 } from "../interfaces/doctor.interface";
-import { doctorService } from "../services/doctor.service";
+import { service } from "../services/service";
 
-class DoctorController {
+class Controller {
     public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const data = await doctorService.getAll();
+            const data = await service.getAll();
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -19,8 +19,8 @@ class DoctorController {
 
     public async create(req: Request, res: Response, next: NextFunction) {
         try {
-            const doctor = req.body as IDoctorCreateDTO;
-            const data = await doctorService.create(doctor);
+            const body = req.body as IDoctorCreateDTO;
+            const data = await service.create(body);
             res.status(StatusCodesEnum.CREATED).json(data);
         } catch (e) {
             next(e);
@@ -29,8 +29,8 @@ class DoctorController {
 
     public async getById(req: Request, res: Response, next: NextFunction) {
         try {
-            const doctorId = req.params.id;
-            const data = await doctorService.getById(doctorId);
+            const { id } = req.params;
+            const data = await service.getById(id);
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -39,9 +39,9 @@ class DoctorController {
 
     public async updateById(req: Request, res: Response, next: NextFunction) {
         try {
-            const doctorId = req.params.id;
-            const doctor = req.body as IDoctorUpdateDTO;
-            const data = await doctorService.updateById(doctorId, doctor);
+            const { id } = req.params;
+            const body = req.body as IDoctorUpdateDTO;
+            const data = await service.updateById(id, body);
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -50,8 +50,8 @@ class DoctorController {
 
     public async deleteById(req: Request, res: Response, next: NextFunction) {
         try {
-            const doctorId = req.params.id;
-            await doctorService.deleteById(doctorId);
+            const { id } = req.params;
+            await service.deleteById(id);
             res.status(StatusCodesEnum.NO_CONTENT).end();
         } catch (e) {
             next(e);
@@ -59,4 +59,4 @@ class DoctorController {
     }
 }
 
-export const doctorController = new DoctorController();
+export const controller = new Controller();
