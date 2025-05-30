@@ -12,4 +12,6 @@ interface IUser extends IBase {
 
 type IUserCreateDTO = Pick<IUser, "email" | "password">;
 
-export type { IUser, IUserCreateDTO };
+type IUserUpdateDTO = Pick<IUser, "email" | "password">;
+
+export type { IUser, IUserCreateDTO, IUserUpdateDTO };

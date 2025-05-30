@@ -5,12 +5,12 @@ import {
     IDoctorCreateDTO,
     IDoctorUpdateDTO,
 } from "../interfaces/doctor.interface";
-import { service } from "../services/service";
+import { doctorService } from "../services/doctorService";
 
-class Controller {
+class DoctorController {
     public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const data = await service.getAll();
+            const data = await doctorService.getAll();
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -20,7 +20,7 @@ class Controller {
     public async create(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body as IDoctorCreateDTO;
-            const data = await service.create(body);
+            const data = await doctorService.create(body);
             res.status(StatusCodesEnum.CREATED).json(data);
         } catch (e) {
             next(e);
@@ -30,7 +30,7 @@ class Controller {
     public async getById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const data = await service.getById(id);
+            const data = await doctorService.getById(id);
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -41,7 +41,7 @@ class Controller {
         try {
             const { id } = req.params;
             const body = req.body as IDoctorUpdateDTO;
-            const data = await service.updateById(id, body);
+            const data = await doctorService.updateById(id, body);
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -51,7 +51,7 @@ class Controller {
     public async deleteById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            await service.deleteById(id);
+            await doctorService.deleteById(id);
             res.status(StatusCodesEnum.NO_CONTENT).end();
         } catch (e) {
             next(e);
@@ -59,4 +59,4 @@ class Controller {
     }
 }
 
-export const controller = new Controller();
+export const doctorController = new DoctorController();

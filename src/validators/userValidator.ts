@@ -10,4 +10,9 @@ export class UserValidator {
         email: this.email.required(),
         password: this.password.required(),
     });
+
+    public static update = joi.object({
+        email: this.email.required(),
+        password: this.password.required(),
+    });
 }

@@ -3,7 +3,6 @@ import { Router } from "express";
 import { userController } from "../controllers/user.controller";
 // import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
-import { UserValidator } from "../validators/userValidator";
 
 const router = Router();
 
@@ -16,12 +15,6 @@ router.get("/", userController.getAll);
 // );
 
 router.get("/:id", commonMiddleware.isIdValidate("id"), userController.getById);
-
-router.post(
-    "/",
-    commonMiddleware.validateBody(UserValidator.create),
-    userController.create,
-);
 
 // router.put(
 //     "/:id",

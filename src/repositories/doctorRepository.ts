@@ -3,28 +3,28 @@ import {
     IDoctorCreateDTO,
     IDoctorUpdateDTO,
 } from "../interfaces/doctor.interface";
-import { repository } from "../repositories/repository";
+import { Doctor } from "../models/doctor.model";
 
-class Service {
+class DoctorRepository {
     public getAll(): Promise<IDoctor[]> {
-        return repository.getAll();
+        return Doctor.find();
     }
 
     public create(body: IDoctorCreateDTO): Promise<IDoctor> {
-        return repository.create(body);
+        return Doctor.create(body);
     }
 
     public getById(id: string): Promise<IDoctor> {
-        return repository.getById(id);
+        return Doctor.findById(id);
     }
 
     public updateById(id: string, body: IDoctorUpdateDTO): Promise<IDoctor> {
-        return repository.updateById(id, body);
+        return Doctor.findByIdAndUpdate(id, body, { new: true });
     }
 
     public deleteById(id: string): Promise<IDoctor> {
-        return repository.deleteById(id);
+        return Doctor.findByIdAndDelete(id);
     }
 }
 
-export const service = new Service();
+export const doctorRepository = new DoctorRepository();

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
-import { IUserCreateDTO } from "../interfaces/user.interface";
 import { userService } from "../services/user.service";
 
 class UserController {
@@ -9,16 +8,6 @@ class UserController {
         try {
             const data = await userService.getAll();
             res.status(StatusCodesEnum.OK).json(data);
-        } catch (e) {
-            next(e);
-        }
-    }
-
-    public async create(req: Request, res: Response, next: NextFunction) {
-        try {
-            const user = req.body as IUserCreateDTO;
-            const data = await userService.create(user);
-            res.status(StatusCodesEnum.CREATED).json(data);
         } catch (e) {
             next(e);
         }
