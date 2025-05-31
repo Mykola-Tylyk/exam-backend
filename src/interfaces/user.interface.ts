@@ -9,6 +9,7 @@ interface IUser extends IBase {
     name: string;
     surname: string;
     telephone: string;
+    isActive: boolean;
     isDeleted: boolean;
     isVerified: boolean;
 }
