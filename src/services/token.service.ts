@@ -6,7 +6,7 @@ import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { TokenTypeEnum } from "../enums/token-type.enum";
 import { ApiError } from "../errors/api.error";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
-// import { tokenRepository } from "../repositories/token.repository";
+import { tokenRepository } from "../repositories/token.repository";
 
 class TokenService {
     public generateTokens(payload: ITokenPayload): ITokenPair {
@@ -76,16 +76,16 @@ class TokenService {
     //     }
     //     return jwt.sign(payload, secret, { expiresIn });
     // }
-    //
-    // public async isTokenExists(
-    //     token: string,
-    //     type: TokenTypeEnum,
-    // ): Promise<boolean> {
-    //     const iTokenPromise = await tokenRepository.findByParams({
-    //         [type]: token,
-    //     });
-    //     return !!iTokenPromise;
-    // }
+
+    public async isTokenExists(
+        token: string,
+        type: TokenTypeEnum,
+    ): Promise<boolean> {
+        const iTokenPromise = await tokenRepository.findByParams({
+            [type]: token,
+        });
+        return !!iTokenPromise;
+    }
 }
 
 export const tokenService = new TokenService();

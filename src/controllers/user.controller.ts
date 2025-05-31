@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
+import { IUserUpdateDTO } from "../interfaces/user.interface";
 import { userService } from "../services/user.service";
 
 class UserController {
@@ -23,16 +24,16 @@ class UserController {
         }
     }
 
-    // public async updateById(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const { id } = req.params;
-    //         const body = req.body as IDoctorUpdateDTO;
-    //         const data = await userService.updateById(id, body);
-    //         res.status(StatusCodesEnum.OK).json(data);
-    //     } catch (e) {
-    //         next(e);
-    //     }
-    // }
+    public async updateById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const body = req.body as IUserUpdateDTO;
+            const data = await userService.updateById(id, body);
+            res.status(StatusCodesEnum.OK).json(data);
+        } catch (e) {
+            next(e);
+        }
+    }
 
     public async deleteById(req: Request, res: Response, next: NextFunction) {
         try {
