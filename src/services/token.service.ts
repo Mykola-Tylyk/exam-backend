@@ -33,12 +33,12 @@ class TokenService {
                 case TokenTypeEnum.REFRESH:
                     secret = config.JWT_REFRESH_SECRET;
                     break;
-                // case ActionTokenTypeEnum.ACTIVATE:
-                //     secret = config.JWT_ACTIVATE_SECRET;
-                //     break;
-                // case ActionTokenTypeEnum.RECOVERY:
-                //     secret = config.JWT_RECOVERY_SECRET;
-                //     break;
+                case ActionTokenTypeEnum.ACTIVATE:
+                    secret = config.JWT_ACTIVATE_SECRET;
+                    break;
+                case ActionTokenTypeEnum.RECOVERY:
+                    secret = config.JWT_RECOVERY_SECRET;
+                    break;
                 default:
                     throw new ApiError(
                         "Invalid token type",
@@ -52,30 +52,30 @@ class TokenService {
         }
     }
 
-    // public generateActionToken(
-    //     payload: ITokenPayload,
-    //     type: ActionTokenTypeEnum,
-    // ): string {
-    //     let secret: string;
-    //     let expiresIn: any;
-    //
-    //     switch (type) {
-    //         case ActionTokenTypeEnum.ACTIVATE:
-    //             secret = config.JWT_ACTIVATE_SECRET;
-    //             expiresIn = config.JWT_ACTIVATE_LIFETIME;
-    //             break;
-    //         case ActionTokenTypeEnum.RECOVERY:
-    //             secret = config.JWT_RECOVERY_SECRET;
-    //             expiresIn = config.JWT_RECOVERY_LIFETIME;
-    //             break;
-    //         default:
-    //             throw new ApiError(
-    //                 "Invalid action token type",
-    //                 StatusCodesEnum.BAD_REQUEST,
-    //             );
-    //     }
-    //     return jwt.sign(payload, secret, { expiresIn });
-    // }
+    public generateActionToken(
+        payload: ITokenPayload,
+        type: ActionTokenTypeEnum,
+    ): string {
+        let secret: string;
+        let expiresIn: any;
+
+        switch (type) {
+            case ActionTokenTypeEnum.ACTIVATE:
+                secret = config.JWT_ACTIVATE_SECRET;
+                expiresIn = config.JWT_ACTIVATE_LIFETIME;
+                break;
+            case ActionTokenTypeEnum.RECOVERY:
+                secret = config.JWT_RECOVERY_SECRET;
+                expiresIn = config.JWT_RECOVERY_LIFETIME;
+                break;
+            default:
+                throw new ApiError(
+                    "Invalid action token type",
+                    StatusCodesEnum.BAD_REQUEST,
+                );
+        }
+        return jwt.sign(payload, secret, { expiresIn });
+    }
 
     public async isTokenExists(
         token: string,
