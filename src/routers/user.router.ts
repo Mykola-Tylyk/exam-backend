@@ -7,13 +7,11 @@ import { UserValidator } from "../validators/userValidator";
 
 const router = Router();
 
-router.get("/", userController.getAll);
-
-// router.get(
-//     "/",
-//     commonMiddleware.query(UserValidator.query),
-//     userController.getAll,
-// );
+router.get(
+    "/",
+    commonMiddleware.query(UserValidator.query),
+    userController.getAll,
+);
 
 router.get("/:id", commonMiddleware.isIdValidate("id"), userController.getById);
 
@@ -45,13 +43,5 @@ router.patch(
     authMiddleware.isAdmin,
     userController.unBlockUser,
 );
-
-// router.patch(
-//     "/upload-avatar/:id",
-//     authMiddleware.checkAccessToken,
-//     upload.single("avatar"),
-//     commonMiddleware.isFileExists(),
-//     userController.uploadAvatar,
-// );
 
 export const userRouter = router;

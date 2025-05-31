@@ -10,9 +10,9 @@ class TokenRepository {
         return Token.findOne(params);
     }
 
-    // public async deleteBeforeDate(date: Date): Promise<number> {
-    //     const result = await Token.deleteMany({ createdAt: { $lt: date } });
-    //     return result.deletedCount;
-    // }
+    public async deleteBeforeDate(date: Date): Promise<number> {
+        const result = await Token.deleteMany({ createdAt: { $lt: date } });
+        return result.deletedCount;
+    }
 }
 export const tokenRepository = new TokenRepository();

@@ -1,32 +1,34 @@
-// import { FilterQuery } from "mongoose";
+import { FilterQuery } from "mongoose";
 
-import { IUser, IUserCreateDTO } from "../interfaces/user.interface";
+import {
+    IUser,
+    IUserCreateDTO,
+    IUserQuery,
+} from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
 class UserRepository {
-    public getAll(): Promise<IUser[]> {
-        return User.find();
-    }
+    public getAll(query: IUserQuery): Promise<[IUser[], number]> {
+        const skip = query.pageSize * (query.page - 1);
+        const filterObject: FilterQuery<IUser> = { isDeleted: false };
 
-    // public getAll(query: IUserQuery): Promise<[IUser[], number]> {
-    //     const skip = query.pageSize * (query.page - 1);
-    //     const filterObject: FilterQuery<IUser> = { isDeleted: false };
-    //
-    //     if (query.search) {
-    //         filterObject.$or = [
-    //             { name: { $regex: query.search, $options: "i" } },
-    //             { surname: { $regex: query.search, $options: "i" } },
-    //         ];
-    //     }
-    //
-    //     return Promise.all([
-    //         User.find(filterObject)
-    //             .limit(query.pageSize)
-    //             .skip(skip)
-    //             .sort(query.order),
-    //         User.find(filterObject).countDocuments(),
-    //     ]);
-    // }
+        if (query.search) {
+            filterObject.$or = [
+                { name: { $regex: query.search, $options: "i" } },
+                { surname: { $regex: query.search, $options: "i" } },
+                { telephone: { $regex: query.search, $options: "i" } },
+                { email: { $regex: query.search, $options: "i" } },
+            ];
+        }
+
+        return Promise.all([
+            User.find(filterObject)
+                .limit(query.pageSize)
+                .skip(skip)
+                .sort(query.sort),
+            User.find(filterObject).countDocuments(),
+        ]);
+    }
 
     public create(user: IUserCreateDTO): Promise<IUser> {
         return User.create(user);
