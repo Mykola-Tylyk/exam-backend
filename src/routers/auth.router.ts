@@ -5,7 +5,7 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
 import { AuthValidator } from "../validators/auth.validator";
 import { RecoveryValidator } from "../validators/recovery.validator";
-import { UserValidator } from "../validators/userValidator";
+import { UserValidator } from "../validators/user.validator";
 
 const router = Router();
 
