@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
-import {
-    IClinicCreateDTO,
-    IClinicUpdateDTO,
-} from "../interfaces/clinic.interface";
 import { IQuery } from "../interfaces/query.interface";
-import { clinicService } from "../services/clinic.service";
+import {
+    IServiceCreateDTO,
+    IServiceUpdateDTO,
+} from "../interfaces/service.interface";
+import { serviceService } from "../services/service.service";
 
-class ClinicController {
+class ServiceController {
     public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
             const query = req.query as any as IQuery;
-            const data = await clinicService.getAll(query);
+            const data = await serviceService.getAll(query);
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -22,8 +22,8 @@ class ClinicController {
     public async create(req: Request, res: Response, next: NextFunction) {
         try {
             const { userId } = res.locals.tokenPayload;
-            const body = req.body as IClinicCreateDTO;
-            const data = await clinicService.create(body, userId);
+            const body = req.body as IServiceCreateDTO;
+            const data = await serviceService.create(body, userId);
             res.status(StatusCodesEnum.CREATED).json(data);
         } catch (e) {
             next(e);
@@ -33,7 +33,7 @@ class ClinicController {
     public async getById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const data = await clinicService.getById(id);
+            const data = await serviceService.getById(id);
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -43,8 +43,8 @@ class ClinicController {
     public async updateById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const body = req.body as IClinicUpdateDTO;
-            const data = await clinicService.updateById(id, body);
+            const body = req.body as IServiceUpdateDTO;
+            const data = await serviceService.updateById(id, body);
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
@@ -54,7 +54,7 @@ class ClinicController {
     public async deleteById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            await clinicService.deleteById(id);
+            await serviceService.deleteById(id);
             res.status(StatusCodesEnum.NO_CONTENT).end();
         } catch (e) {
             next(e);
@@ -62,4 +62,4 @@ class ClinicController {
     }
 }
 
-export const clinicController = new ClinicController();
+export const serviceController = new ServiceController();

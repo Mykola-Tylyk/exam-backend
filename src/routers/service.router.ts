@@ -1,29 +1,29 @@
 import { Router } from "express";
 
-import { clinicController } from "../controllers/clinic.controller";
+import { serviceController } from "../controllers/service.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
-import { ClinicValidator } from "../validators/clinic.validator";
+import { ServiceValidator } from "../validators/service.validator";
 
 const router = Router();
 
 router.get(
     "/",
-    commonMiddleware.query(ClinicValidator.query),
-    clinicController.getAll,
+    commonMiddleware.query(ServiceValidator.query),
+    serviceController.getAll,
 );
 
 router.get(
     "/:id",
     commonMiddleware.isIdValidate("id"),
-    clinicController.getById,
+    serviceController.getById,
 );
 
 router.post(
     "/",
     authMiddleware.checkAccessToken,
-    commonMiddleware.validateBody(ClinicValidator.create),
-    clinicController.create,
+    commonMiddleware.validateBody(ServiceValidator.create),
+    serviceController.create,
 );
 
 router.put(
@@ -31,8 +31,8 @@ router.put(
     authMiddleware.checkAccessToken,
     authMiddleware.isAdmin,
     commonMiddleware.isIdValidate("id"),
-    commonMiddleware.validateBody(ClinicValidator.update),
-    clinicController.updateById,
+    commonMiddleware.validateBody(ServiceValidator.update),
+    serviceController.updateById,
 );
 
 router.delete(
@@ -40,7 +40,7 @@ router.delete(
     authMiddleware.checkAccessToken,
     authMiddleware.isAdmin,
     commonMiddleware.isIdValidate("id"),
-    clinicController.deleteById,
+    serviceController.deleteById,
 );
 
-export const clinicRouter = router;
+export const serviceRouter = router;

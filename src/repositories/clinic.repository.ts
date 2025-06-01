@@ -9,10 +9,6 @@ import { IQuery } from "../interfaces/query.interface";
 import { Clinic } from "../models/clinic.model";
 
 class ClinicRepository {
-    // public getAll(): Promise<IClinic[]> {
-    //     return Clinic.find();
-    // }
-
     public getAll(query: IQuery): Promise<[IClinic[], number]> {
         const skip = query.pageSize * (query.page - 1);
         const filterObject: FilterQuery<IClinic> = {};

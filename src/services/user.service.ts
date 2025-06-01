@@ -9,53 +9,6 @@ import { Clinic } from "../models/clinic.model";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
-    // public async getAll(query: IUserQuery): Promise<IPaginatedResponse<IUser>> {
-    //     const [data, totalItems] = await userRepository.getAll(query);
-    //
-    //     const totalPages = Math.ceil(totalItems / query.pageSize);
-    //     return {
-    //         totalItems,
-    //         totalPages,
-    //         prevPage: !!(query.page - 1),
-    //         nextPage: query.page + 1 <= totalPages,
-    //         data,
-    //     };
-    // }
-
-    // public async getAll(
-    //     query: IUserQuery,
-    // ): Promise<IPaginatedResponse<IUserWithClinics>> {
-    //     const [users, totalItems] = await userRepository.getAll(query); // вызов из репозитория
-    //     const totalPages = Math.ceil(totalItems / query.pageSize);
-    //
-    //     const userIds = users.map((user) => user._id.toString());
-    //
-    //     // Получаем клиники, принадлежащие пользователям из списка
-    //     const clinics = await Clinic.find({ _userId: { $in: userIds } }).lean();
-    //     // Группируем клиники по _userId
-    //     const clinicsByUserId = new Map<string, IClinic[]>();
-    //     for (const clinic of clinics) {
-    //         const userIdStr = clinic._userId.toString(); // Преобразуем ObjectId в строку
-    //         const list = clinicsByUserId.get(userIdStr) || [];
-    //         list.push(clinic);
-    //         clinicsByUserId.set(userIdStr, list);
-    //     }
-    //
-    //     // Добавляем клиники в каждый объект пользователя
-    //     const dataWithClinics: IUserWithClinics[] = users.map((user) => ({
-    //         ...user,
-    //         clinics: clinicsByUserId.get(user._id.toString()) || [],
-    //     }));
-    //
-    //     return {
-    //         totalItems,
-    //         totalPages,
-    //         prevPage: query.page > 1,
-    //         nextPage: query.page < totalPages,
-    //         data: dataWithClinics,
-    //     };
-    // }
-
     public async getAll(
         query: IQuery,
     ): Promise<IPaginatedResponse<IUserWithClinics>> {

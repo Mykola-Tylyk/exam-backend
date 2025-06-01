@@ -10,19 +10,6 @@ import { Clinic } from "../models/clinic.model";
 import { clinicRepository } from "../repositories/clinic.repository";
 
 class ClinicService {
-    // public getAll(): Promise<IClinic[]> {
-    //     return clinicRepository.getAll();
-    // }
-
-    // public create(body: IClinicCreateDTO, userId: string): Promise<IClinic> {
-    //     const clinicData: IClinicModelDTO = {
-    //         ...body,
-    //         userIds: [userId],
-    //     };
-    //
-    //     return clinicRepository.create(clinicData);
-    // }
-
     public async getAll(query: IQuery): Promise<IPaginatedResponse<IClinic>> {
         const [data, totalItems] = await clinicRepository.getAll(query);
 
@@ -40,22 +27,18 @@ class ClinicService {
         body: IClinicCreateDTO,
         userId: string,
     ): Promise<IClinic> {
-        // Проверка — есть ли такая клиника по имени
         let existingClinic = await Clinic.findOne({ name: body.name });
 
         if (existingClinic) {
-            // Если клиника есть и userId уже есть — вернуть её
             if (existingClinic.userIds.includes(userId)) {
                 return existingClinic;
             }
 
-            // Если userId нет — добавляем
             existingClinic.userIds.push(userId);
             await existingClinic.save();
             return existingClinic;
         }
 
-        // Если такой клиники ещё нет — создаём новую
         const clinicData: IClinicModelDTO = {
             name: body.name,
             userIds: [userId],
