@@ -5,4 +5,5 @@ export const RegexEnum = {
     CLINIC: /^(?=.{1,40}$)([A-Za-z]+(-[A-Za-z]+)?)( [A-Za-z]+(-[A-Za-z]+)?)*$/,
     SPECIALIZATION:
         /^(?=.{1,20}$)([A-Za-z]+(-[A-Za-z]+)?)( [A-Za-z]+(-[A-Za-z]+)?)*$/,
+    OBJECT_ID: /^[0-9a-fA-F]{24}$/,
 };

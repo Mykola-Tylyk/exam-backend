@@ -6,6 +6,7 @@ import {
     IServiceModelDTO,
     IServiceUpdateDTO,
 } from "../interfaces/service.interface";
+import { Clinic } from "../models/clinic.model";
 import { Service } from "../models/service.model";
 import { serviceRepository } from "../repositories/service.repository";
 
@@ -27,26 +28,35 @@ class ServiceService {
         body: IServiceCreateDTO,
         userId: string,
     ): Promise<IService> {
-        let existingClinic = await Service.findOne({
+        let existingService = await Service.findOne({
             specialization: body.specialization,
         });
 
-        if (existingClinic) {
-            if (existingClinic.userIds.includes(userId)) {
-                return existingClinic;
+        if (existingService) {
+            if (!existingService.userIds.includes(userId)) {
+                await Clinic.findByIdAndUpdate(
+                    body.clinicId,
+                    { $addToSet: { userIds: userId } },
+                    { new: true },
+                );
+                existingService.userIds.push(userId);
             }
 
-            existingClinic.userIds.push(userId);
-            await existingClinic.save();
-            return existingClinic;
+            if (!existingService.clinicIds.includes(body.clinicId)) {
+                existingService.clinicIds.push(body.clinicId);
+            }
+
+            await existingService.save();
+            return existingService;
         }
 
-        const clinicData: IServiceModelDTO = {
+        const serviceData: IServiceModelDTO = {
             specialization: body.specialization,
             userIds: [userId],
+            clinicIds: [body.clinicId],
         };
 
-        return await serviceRepository.create(clinicData);
+        return await serviceRepository.create(serviceData);
     }
 
     public getById(id: string): Promise<IService> {

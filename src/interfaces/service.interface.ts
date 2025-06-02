@@ -4,13 +4,22 @@ interface IService extends IBase {
     _id: string;
     specialization: string;
     userIds: string[];
+    clinicIds: string[];
 }
 
-type IServiceModelDTO = Pick<IService, "specialization" | "userIds">;
+type IServiceModelDTO = Pick<
+    IService,
+    "specialization" | "userIds" | "clinicIds"
+>;
 
-type IServiceCreateDTO = Pick<IService, "specialization">;
+type IServiceCreateDTO = {
+    specialization: string;
+    clinicId: string;
+};
 
-type IServiceUpdateDTO = Pick<IService, "specialization">;
+// type IServiceCreateDTO = Pick<IService, "specialization" | "clinicIds">;
+
+type IServiceUpdateDTO = Pick<IService, "specialization" | "clinicIds">;
 
 export type {
     IService,

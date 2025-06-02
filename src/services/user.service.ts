@@ -3,15 +3,17 @@ import { ApiError } from "../errors/api.error";
 import { IClinic } from "../interfaces/clinic.interface";
 import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
 import { IQuery } from "../interfaces/query.interface";
+import { IService } from "../interfaces/service.interface";
 import { IUser } from "../interfaces/user.interface";
-import { IUserWithClinics } from "../interfaces/user-with-clinics.interface";
+import { IUserWithClinicsAndServices } from "../interfaces/user-with-clinics-and-services.interface";
 import { Clinic } from "../models/clinic.model";
+import { Service } from "../models/service.model";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
     public async getAll(
         query: IQuery,
-    ): Promise<IPaginatedResponse<IUserWithClinics>> {
+    ): Promise<IPaginatedResponse<IUserWithClinicsAndServices>> {
         const [users, totalItems] = await userRepository.getAll(query);
         const totalPages = Math.ceil(totalItems / query.pageSize);
 
@@ -29,10 +31,27 @@ class UserService {
             }
         }
 
-        const dataWithClinics: IUserWithClinics[] = users.map((user) => ({
-            ...user,
-            clinics: clinicsByUserId.get(user._id.toString()) || [],
-        }));
+        const services = await Service.find({
+            userIds: { $in: userIds },
+        }).lean();
+
+        const servicesByUserId = new Map<string, IService[]>();
+        for (const service of services) {
+            for (const uid of service.userIds) {
+                const userIdStr = uid.toString();
+                const list = servicesByUserId.get(userIdStr) || [];
+                list.push(service);
+                servicesByUserId.set(userIdStr, list);
+            }
+        }
+
+        const dataWithClinics: IUserWithClinicsAndServices[] = users.map(
+            (user) => ({
+                ...user,
+                clinics: clinicsByUserId.get(user._id.toString()) || [],
+                services: servicesByUserId.get(user._id.toString()) || [],
+            }),
+        );
 
         return {
             totalItems,

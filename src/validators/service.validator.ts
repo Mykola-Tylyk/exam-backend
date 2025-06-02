@@ -7,13 +7,19 @@ export class ServiceValidator {
     private static specialization = joi
         .string()
         .regex(RegexEnum.SPECIALIZATION);
+    private static clinicId = joi
+        .string()
+        .regex(RegexEnum.OBJECT_ID)
+        .required();
 
     public static create = joi.object({
         specialization: this.specialization.required(),
+        clinicId: this.clinicId,
     });
 
     public static update = joi.object({
         specialization: this.specialization.required(),
+        clinicId: this.clinicId,
     });
 
     public static query = joi.object({
