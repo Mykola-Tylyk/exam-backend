@@ -6,20 +6,20 @@ import { IQuery } from "../interfaces/query.interface";
 import { IService } from "../interfaces/service.interface";
 import { IUser } from "../interfaces/user.interface";
 import { IUserWithClinicsAndServices } from "../interfaces/user-with-clinics-and-services.interface";
-import { Clinic } from "../models/clinic.model";
 import { Service } from "../models/service.model";
+import { clinicRepository } from "../repositories/clinic.repository";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
     public async getAll(
         query: IQuery,
     ): Promise<IPaginatedResponse<IUserWithClinicsAndServices>> {
-        const [users, totalItems] = await userRepository.getAll(query);
+        let [users, totalItems] = await userRepository.getAll(query);
         const totalPages = Math.ceil(totalItems / query.pageSize);
 
         const userIds = users.map((user) => user._id.toString());
 
-        const clinics = await Clinic.find({ userIds: { $in: userIds } }).lean();
+        const [clinics] = await clinicRepository.getAll(query, userIds);
 
         const clinicsByUserId = new Map<string, IClinic[]>();
         for (const clinic of clinics) {
@@ -45,20 +45,33 @@ class UserService {
             }
         }
 
-        const dataWithClinics: IUserWithClinicsAndServices[] = users.map(
-            (user) => ({
+        if (query.clinicSearch) {
+            const userIdsFromClinics = new Set<string>();
+            for (const clinic of clinics) {
+                clinic.userIds.forEach((id) =>
+                    userIdsFromClinics.add(id.toString()),
+                );
+            }
+
+            users = users.filter((user) =>
+                userIdsFromClinics.has(user._id.toString()),
+            );
+
+            totalItems = users.length;
+        }
+        const dataWithClinicsAndServices: IUserWithClinicsAndServices[] =
+            users.map((user) => ({
                 ...user,
                 clinics: clinicsByUserId.get(user._id.toString()) || [],
                 services: servicesByUserId.get(user._id.toString()) || [],
-            }),
-        );
+            }));
 
         return {
             totalItems,
             totalPages,
             prevPage: query.page > 1,
             nextPage: query.page < totalPages,
-            data: dataWithClinics,
+            data: dataWithClinicsAndServices,
         };
     }
 

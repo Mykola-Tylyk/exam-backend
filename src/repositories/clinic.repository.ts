@@ -9,13 +9,20 @@ import { IQuery } from "../interfaces/query.interface";
 import { Clinic } from "../models/clinic.model";
 
 class ClinicRepository {
-    public getAll(query: IQuery): Promise<[IClinic[], number]> {
+    public getAll(
+        query: IQuery,
+        userIds?: string[],
+    ): Promise<[IClinic[], number]> {
         const skip = query.pageSize * (query.page - 1);
         const filterObject: FilterQuery<IClinic> = {};
 
-        if (query.search) {
+        if (userIds?.length) {
+            filterObject.userIds = { $in: userIds };
+        }
+
+        if (query.clinicSearch) {
             filterObject.$or = [
-                { name: { $regex: query.search, $options: "i" } },
+                { name: { $regex: query.clinicSearch, $options: "i" } },
             ];
         }
 
@@ -24,7 +31,7 @@ class ClinicRepository {
                 .limit(query.pageSize)
                 .skip(skip)
                 .sort(query.sort)
-                .lean(),
+                .then((docs) => docs.map((doc) => doc.toJSON())),
             Clinic.find(filterObject).countDocuments(),
         ]);
     }

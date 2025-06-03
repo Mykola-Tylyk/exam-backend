@@ -1,6 +1,8 @@
 export interface IQuery {
     pageSize: number;
     page: number;
-    search?: string;
+    userSearch?: string;
+    clinicSearch?: string;
+    serviceSearch?: string;
     sort?: string;
 }

@@ -13,9 +13,9 @@ class ServiceRepository {
         const skip = query.pageSize * (query.page - 1);
         const filterObject: FilterQuery<IService> = {};
 
-        if (query.search) {
+        if (query.serviceSearch) {
             filterObject.$or = [
-                { name: { $regex: query.search, $options: "i" } },
+                { name: { $regex: query.serviceSearch, $options: "i" } },
             ];
         }
 

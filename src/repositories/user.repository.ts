@@ -9,12 +9,12 @@ class UserRepository {
         const skip = query.pageSize * (query.page - 1);
         const filterObject: FilterQuery<IUser> = { isDeleted: false };
 
-        if (query.search) {
+        if (query.userSearch) {
             filterObject.$or = [
-                { name: { $regex: query.search, $options: "i" } },
-                { surname: { $regex: query.search, $options: "i" } },
-                { telephone: { $regex: query.search, $options: "i" } },
-                { email: { $regex: query.search, $options: "i" } },
+                { name: { $regex: query.userSearch, $options: "i" } },
+                { surname: { $regex: query.userSearch, $options: "i" } },
+                { telephone: { $regex: query.userSearch, $options: "i" } },
+                { email: { $regex: query.userSearch, $options: "i" } },
             ];
         }
 
@@ -23,7 +23,7 @@ class UserRepository {
                 .limit(query.pageSize)
                 .skip(skip)
                 .sort(query.sort)
-                .lean(),
+                .then((docs) => docs.map((doc) => doc.toJSON())),
             User.find(filterObject).countDocuments(),
         ]);
     }
