@@ -6,8 +6,8 @@ import { IQuery } from "../interfaces/query.interface";
 import { IService } from "../interfaces/service.interface";
 import { IUser } from "../interfaces/user.interface";
 import { IUserWithClinicsAndServices } from "../interfaces/user-with-clinics-and-services.interface";
-import { Service } from "../models/service.model";
 import { clinicRepository } from "../repositories/clinic.repository";
+import { serviceRepository } from "../repositories/service.repository";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
@@ -15,6 +15,11 @@ class UserService {
         query: IQuery,
     ): Promise<IPaginatedResponse<IUserWithClinicsAndServices>> {
         let [users, totalItems] = await userRepository.getAll(query);
+
+        if (!users) {
+            throw new ApiError("Users not found", StatusCodesEnum.NOT_FOUND);
+        }
+
         const totalPages = Math.ceil(totalItems / query.pageSize);
 
         const userIds = users.map((user) => user._id.toString());
@@ -31,9 +36,7 @@ class UserService {
             }
         }
 
-        const services = await Service.find({
-            userIds: { $in: userIds },
-        }).lean();
+        const [services] = await serviceRepository.getAll(query, userIds);
 
         const servicesByUserId = new Map<string, IService[]>();
         for (const service of services) {
@@ -56,9 +59,25 @@ class UserService {
             users = users.filter((user) =>
                 userIdsFromClinics.has(user._id.toString()),
             );
+        }
 
+        if (query.serviceSearch) {
+            const userIdsFromServices = new Set<string>();
+            for (const service of services) {
+                service.userIds.forEach((id) =>
+                    userIdsFromServices.add(id.toString()),
+                );
+            }
+
+            users = users.filter((user) =>
+                userIdsFromServices.has(user._id.toString()),
+            );
+        }
+
+        if (query.clinicSearch || query.serviceSearch) {
             totalItems = users.length;
         }
+
         const dataWithClinicsAndServices: IUserWithClinicsAndServices[] =
             users.map((user) => ({
                 ...user,
@@ -99,9 +118,9 @@ class UserService {
     }
 
     public async deleteById(userId: string): Promise<void> {
-        const data = await userRepository.getById(userId);
+        const user = await userRepository.getById(userId);
 
-        if (!data) {
+        if (!user) {
             throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
         }
 

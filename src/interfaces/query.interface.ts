@@ -4,5 +4,7 @@ export interface IQuery {
     userSearch?: string;
     clinicSearch?: string;
     serviceSearch?: string;
-    sort?: string;
+    userSort?: string;
+    clinicSort?: string;
+    serviceSort?: string;
 }

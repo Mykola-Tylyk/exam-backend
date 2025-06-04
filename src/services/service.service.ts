@@ -1,3 +1,5 @@
+import { StatusCodesEnum } from "../enums/status-codes.enum";
+import { ApiError } from "../errors/api.error";
 import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
 import { IQuery } from "../interfaces/query.interface";
 import {
@@ -6,13 +8,16 @@ import {
     IServiceModelDTO,
     IServiceUpdateDTO,
 } from "../interfaces/service.interface";
-import { Clinic } from "../models/clinic.model";
-import { Service } from "../models/service.model";
+import { clinicRepository } from "../repositories/clinic.repository";
 import { serviceRepository } from "../repositories/service.repository";
 
 class ServiceService {
     public async getAll(query: IQuery): Promise<IPaginatedResponse<IService>> {
-        const [data, totalItems] = await serviceRepository.getAll(query);
+        const [services, totalItems] = await serviceRepository.getAll(query);
+
+        if (!services) {
+            throw new ApiError("Services not found", StatusCodesEnum.NOT_FOUND);
+        }
 
         const totalPages = Math.ceil(totalItems / query.pageSize);
         return {
@@ -20,7 +25,7 @@ class ServiceService {
             totalPages,
             prevPage: !!(query.page - 1),
             nextPage: query.page + 1 <= totalPages,
-            data,
+            data: services,
         };
     }
 
@@ -28,26 +33,33 @@ class ServiceService {
         body: IServiceCreateDTO,
         userId: string,
     ): Promise<IService> {
-        let existingService = await Service.findOne({
+        const service = await serviceRepository.getOne({
             specialization: body.specialization,
         });
 
-        if (existingService) {
-            if (!existingService.userIds.includes(userId)) {
-                await Clinic.findByIdAndUpdate(
-                    body.clinicId,
-                    { $addToSet: { userIds: userId } },
-                    { new: true },
-                );
-                existingService.userIds.push(userId);
-            }
+        const clinic = await clinicRepository.getById(body.clinicId);
 
-            if (!existingService.clinicIds.includes(body.clinicId)) {
-                existingService.clinicIds.push(body.clinicId);
-            }
+        if (!clinic) {
+            throw new ApiError("Clinic not found", StatusCodesEnum.NOT_FOUND);
+        }
 
-            await existingService.save();
-            return existingService;
+        if (!clinic.userIds.includes(userId)) {
+            await clinicRepository.addUserToClinic(
+                clinic._id.toString(),
+                userId,
+            );
+        }
+
+        if (service) {
+            let updatedService = service;
+
+            updatedService = await serviceRepository.addUserAndClinicToService(
+                service._id.toString(),
+                userId,
+                body.clinicId,
+            );
+
+            return updatedService;
         }
 
         const serviceData: IServiceModelDTO = {
@@ -59,16 +71,37 @@ class ServiceService {
         return await serviceRepository.create(serviceData);
     }
 
-    public getById(id: string): Promise<IService> {
-        return serviceRepository.getById(id);
+    public async getById(id: string): Promise<IService> {
+        const service = await serviceRepository.getById(id);
+
+        if (!service) {
+            throw new ApiError("Service not found", StatusCodesEnum.NOT_FOUND);
+        }
+
+        return service;
     }
 
-    public updateById(id: string, body: IServiceUpdateDTO): Promise<IService> {
-        return serviceRepository.updateById(id, body);
+    public async updateById(
+        id: string,
+        body: IServiceUpdateDTO,
+    ): Promise<IService> {
+        const service = await serviceRepository.updateById(id, body);
+
+        if (!service) {
+            throw new ApiError("Service not found", StatusCodesEnum.NOT_FOUND);
+        }
+
+        return service;
     }
 
-    public deleteById(id: string): Promise<IService> {
-        return serviceRepository.deleteById(id);
+    public async deleteById(id: string): Promise<IService> {
+        const service = await serviceRepository.deleteById(id);
+
+        if (!service) {
+            throw new ApiError("Service not found", StatusCodesEnum.NOT_FOUND);
+        }
+
+        return service;
     }
 }
 

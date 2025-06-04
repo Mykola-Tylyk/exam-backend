@@ -30,7 +30,7 @@ class ClinicRepository {
             Clinic.find(filterObject)
                 .limit(query.pageSize)
                 .skip(skip)
-                .sort(query.sort)
+                .sort(query.clinicSort)
                 .then((docs) => docs.map((doc) => doc.toJSON())),
             Clinic.find(filterObject).countDocuments(),
         ]);
@@ -50,6 +50,18 @@ class ClinicRepository {
 
     public deleteById(id: string): Promise<IClinic> {
         return Clinic.findByIdAndDelete(id);
+    }
+
+    public getOne(filter: FilterQuery<IClinic>): Promise<IClinic> {
+        return Clinic.findOne(filter);
+    }
+
+    public addUserToClinic(clinicId: string, userId: string): Promise<IClinic> {
+        return Clinic.findByIdAndUpdate(
+            clinicId,
+            { $addToSet: { userIds: userId } },
+            { new: true },
+        );
     }
 }
 

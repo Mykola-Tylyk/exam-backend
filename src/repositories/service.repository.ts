@@ -9,13 +9,30 @@ import {
 import { Service } from "../models/service.model";
 
 class ServiceRepository {
-    public getAll(query: IQuery): Promise<[IService[], number]> {
+    public getAll(
+        query: IQuery,
+        userIds?: string[],
+        clinicIds?: string[],
+    ): Promise<[IService[], number]> {
         const skip = query.pageSize * (query.page - 1);
         const filterObject: FilterQuery<IService> = {};
 
+        if (userIds?.length) {
+            filterObject.userIds = { $in: userIds };
+        }
+
+        if (clinicIds?.length) {
+            filterObject.clinicIds = { $in: clinicIds };
+        }
+
         if (query.serviceSearch) {
             filterObject.$or = [
-                { name: { $regex: query.serviceSearch, $options: "i" } },
+                {
+                    specialization: {
+                        $regex: query.serviceSearch,
+                        $options: "i",
+                    },
+                },
             ];
         }
 
@@ -23,8 +40,8 @@ class ServiceRepository {
             Service.find(filterObject)
                 .limit(query.pageSize)
                 .skip(skip)
-                .sort(query.sort)
-                .lean(),
+                .sort(query.serviceSort)
+                .then((docs) => docs.map((doc) => doc.toJSON())),
             Service.find(filterObject).countDocuments(),
         ]);
     }
@@ -43,6 +60,27 @@ class ServiceRepository {
 
     public deleteById(id: string): Promise<IService> {
         return Service.findByIdAndDelete(id);
+    }
+
+    public getOne(filter: FilterQuery<IService>): Promise<IService> {
+        return Service.findOne(filter);
+    }
+
+    public addUserAndClinicToService(
+        serviceId: string,
+        userId: string,
+        clinicId: string,
+    ): Promise<IService> {
+        return Service.findByIdAndUpdate(
+            serviceId,
+            {
+                $addToSet: {
+                    userIds: userId,
+                    clinicIds: clinicId,
+                },
+            },
+            { new: true },
+        );
     }
 }
 

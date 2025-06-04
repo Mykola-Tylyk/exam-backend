@@ -22,7 +22,7 @@ class UserRepository {
             User.find(filterObject)
                 .limit(query.pageSize)
                 .skip(skip)
-                .sort(query.sort)
+                .sort(query.userSort)
                 .then((docs) => docs.map((doc) => doc.toJSON())),
             User.find(filterObject).countDocuments(),
         ]);

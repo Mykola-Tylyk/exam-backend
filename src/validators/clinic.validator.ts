@@ -2,6 +2,7 @@ import joi from "joi";
 
 import { ClinicQuerySortEnum } from "../enums/clinic-query-sort.enum";
 import { RegexEnum } from "../enums/regex.enum";
+import { ServiceQuerySortEnum } from "../enums/service-query-sort.enum";
 
 export class ClinicValidator {
     private static name = joi.string().regex(RegexEnum.CLINIC);
@@ -18,11 +19,20 @@ export class ClinicValidator {
         pageSize: joi.number().min(1).max(100).default(10),
         page: joi.number().min(1).default(1),
         clinicSearch: joi.string().trim(),
-        sort: joi
+        serviceSearch: joi.string().trim(),
+        clinicSort: joi
             .string()
             .valid(
                 ...Object.values(ClinicQuerySortEnum),
                 ...Object.values(ClinicQuerySortEnum).map((item) => `-${item}`),
+            ),
+        serviceSort: joi
+            .string()
+            .valid(
+                ...Object.values(ServiceQuerySortEnum),
+                ...Object.values(ServiceQuerySortEnum).map(
+                    (item) => `-${item}`,
+                ),
             ),
     });
 }

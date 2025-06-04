@@ -1,6 +1,8 @@
 import joi from "joi";
 
+import { ClinicQuerySortEnum } from "../enums/clinic-query-sort.enum";
 import { RegexEnum } from "../enums/regex.enum";
+import { ServiceQuerySortEnum } from "../enums/service-query-sort.enum";
 import { UserQuerySortEnum } from "../enums/user-query-sort.enum";
 
 export class UserValidator {
@@ -29,11 +31,26 @@ export class UserValidator {
         page: joi.number().min(1).default(1),
         userSearch: joi.string().trim(),
         clinicSearch: joi.string().trim(),
-        sort: joi
+        serviceSearch: joi.string().trim(),
+        userSort: joi
             .string()
             .valid(
                 ...Object.values(UserQuerySortEnum),
                 ...Object.values(UserQuerySortEnum).map((item) => `-${item}`),
+            ),
+        clinicSort: joi
+            .string()
+            .valid(
+                ...Object.values(ClinicQuerySortEnum),
+                ...Object.values(ClinicQuerySortEnum).map((item) => `-${item}`),
+            ),
+        serviceSort: joi
+            .string()
+            .valid(
+                ...Object.values(ServiceQuerySortEnum),
+                ...Object.values(ServiceQuerySortEnum).map(
+                    (item) => `-${item}`,
+                ),
             ),
     });
 }
