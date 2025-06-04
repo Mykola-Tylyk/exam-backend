@@ -15,7 +15,11 @@ router.post(
     authController.signUp,
 );
 
-router.post("/sign-in", authController.signIn);
+router.post(
+    "/sign-in",
+    commonMiddleware.validateBody(AuthValidator.validateEmailPassword),
+    authController.signIn,
+);
 
 router.get("/me", authMiddleware.checkAccessToken, authController.me);
 
