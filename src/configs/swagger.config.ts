@@ -51,7 +51,7 @@ const swaggerDocument: OpenAPIV3.Document = {
                                     },
                                     name: { type: "string" },
                                     surname: { type: "string" },
-                                    telephone: { type: "integer" },
+                                    telephone: { type: "string" },
                                 },
                                 required: [
                                     "email",
@@ -79,7 +79,7 @@ const swaggerDocument: OpenAPIV3.Document = {
                                                 role: { type: "string" },
                                                 name: { type: "string" },
                                                 surname: { type: "string" },
-                                                telephone: { type: "integer" },
+                                                telephone: { type: "string" },
                                                 isActive: { type: "boolean" },
                                                 isDeleted: { type: "boolean" },
                                                 isVerified: { type: "boolean" },
@@ -160,7 +160,7 @@ const swaggerDocument: OpenAPIV3.Document = {
                                                 role: { type: "string" },
                                                 name: { type: "string" },
                                                 surname: { type: "string" },
-                                                telephone: { type: "integer" },
+                                                telephone: { type: "string" },
                                                 isActive: { type: "boolean" },
                                                 isDeleted: { type: "boolean" },
                                                 isVerified: { type: "boolean" },
@@ -241,7 +241,7 @@ const swaggerDocument: OpenAPIV3.Document = {
                                                 role: { type: "string" },
                                                 name: { type: "string" },
                                                 surname: { type: "string" },
-                                                telephone: { type: "integer" },
+                                                telephone: { type: "string" },
                                                 isActive: { type: "boolean" },
                                                 isDeleted: { type: "boolean" },
                                                 isVerified: { type: "boolean" },
@@ -274,10 +274,1094 @@ const swaggerDocument: OpenAPIV3.Document = {
                 },
             },
         },
-        "/auth/refresh": {},
-        "/auth/activate/:token": {},
-        "/auth/recovery": {},
-        "/auth/recovery/:token": {},
+        "/auth/refresh": {
+            post: {
+                tags: ["Auth"],
+                summary: "Access token refresh",
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    refreshToken: { type: "string" },
+                                },
+                                required: ["refreshToken"],
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    "200": {
+                        description: "New access token issued",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        tokens: {
+                                            type: "object",
+                                            properties: {
+                                                accessToken: { type: "string" },
+                                                refreshToken: {
+                                                    type: "string",
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/auth/activate/{token}": {
+            patch: {
+                tags: ["Auth"],
+                summary: "Activating your account",
+                parameters: [
+                    {
+                        name: "token",
+                        in: "path",
+                        description: "Your activation token",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Account successfully activated",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        _id: { type: "string" },
+                                        email: { type: "string" },
+                                        role: { type: "string" },
+                                        name: { type: "string" },
+                                        surname: { type: "string" },
+                                        telephone: { type: "string" },
+                                        isActive: { type: "boolean" },
+                                        isDeleted: { type: "boolean" },
+                                        isVerified: { type: "boolean" },
+                                        createdAt: { type: "string" },
+                                        updatedAt: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/auth/recovery": {
+            post: {
+                tags: ["Auth"],
+                summary: "Password recovery request",
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    email: { type: "string", format: "email" },
+                                },
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    "200": {
+                        description: "Check your email",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        details: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/auth/recovery/{token}": {
+            post: {
+                tags: ["Auth"],
+                summary: "Password recovery",
+                parameters: [
+                    {
+                        name: "token",
+                        in: "path",
+                        description: "Your action token",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    password: {
+                                        type: "string",
+                                        format: "password",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    "200": {
+                        description: "Password restored",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        _id: { type: "string" },
+                                        email: { type: "string" },
+                                        role: { type: "string" },
+                                        name: { type: "string" },
+                                        surname: { type: "string" },
+                                        telephone: { type: "string" },
+                                        isActive: { type: "boolean" },
+                                        isDeleted: { type: "boolean" },
+                                        isVerified: { type: "boolean" },
+                                        createdAt: { type: "string" },
+                                        updatedAt: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/users": {
+            get: {
+                tags: ["Users"],
+                summary: "Get all users",
+                parameters: [
+                    {
+                        name: "pageSize",
+                        in: "query",
+                        description: "Page size",
+                        required: false,
+                        schema: { type: "integer", format: "int32" },
+                    },
+                    {
+                        name: "page",
+                        in: "query",
+                        description: "Page",
+                        required: false,
+                        schema: { type: "integer", format: "int32" },
+                    },
+                    {
+                        name: "userSearch",
+                        in: "query",
+                        description:
+                            "Search users by name, surname, telephone, email",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "clinicSearch",
+                        in: "query",
+                        description: "Search clinics by name",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "serviceSearch",
+                        in: "query",
+                        description: "Search services by  specialization",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "userSort",
+                        in: "query",
+                        description: "Sort users by name, surname",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "clinicSort",
+                        in: "query",
+                        description: "Sort clinics by name",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "serviceSort",
+                        in: "query",
+                        description: "Sort services by specialization",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Paginated list of users",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        totalItems: { type: "integer" },
+                                        totalPages: { type: "integer" },
+                                        prevPage: { type: "boolean" },
+                                        nextPage: { type: "boolean" },
+                                        data: {
+                                            type: "array",
+                                            items: {
+                                                type: "object",
+                                                allOf: [
+                                                    {
+                                                        $ref: "#/components/schemas/User",
+                                                    },
+                                                    {
+                                                        type: "object",
+                                                        properties: {
+                                                            clinics: {
+                                                                type: "array",
+                                                                items: {
+                                                                    $ref: "#/components/schemas/Clinic",
+                                                                },
+                                                            },
+                                                            services: {
+                                                                type: "array",
+                                                                items: {
+                                                                    $ref: "#/components/schemas/Service",
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/users/{id}": {
+            get: {
+                tags: ["Users"],
+                summary: "Get user by ID",
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id user",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Data user",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/User",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            put: {
+                tags: ["Users"],
+                summary: "Update user by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id user",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                    surname: { type: "string" },
+                                    telephone: { type: "string" },
+                                },
+                                required: ["name", "surname", "telephone"],
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    "200": {
+                        description: "Updated user data",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/User",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            delete: {
+                tags: ["Users"],
+                summary: "Delete user by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id user",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "204": {
+                        description: "No content",
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not Found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/users/{id}/block": {
+            patch: {
+                tags: ["Users"],
+                summary: "Only an admin can block a user by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id user",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "User data",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/User",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "403": {
+                        description: "Forbidden",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 403,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/users/{id}/unblock": {
+            patch: {
+                tags: ["Users"],
+                summary: "Only an admin can unblock a user by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id user",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Updated user data",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/User",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "403": {
+                        description: "Forbidden",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 403,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/clinics": {
+            get: {
+                tags: ["Users"],
+                summary: "Get all users",
+                parameters: [
+                    {
+                        name: "pageSize",
+                        in: "query",
+                        description: "Page size",
+                        required: false,
+                        schema: { type: "integer", format: "int32" },
+                    },
+                    {
+                        name: "page",
+                        in: "query",
+                        description: "Page",
+                        required: false,
+                        schema: { type: "integer", format: "int32" },
+                    },
+                    {
+                        name: "userSearch",
+                        in: "query",
+                        description:
+                            "Search users by name, surname, telephone, email",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "clinicSearch",
+                        in: "query",
+                        description: "Search clinics by name",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "serviceSearch",
+                        in: "query",
+                        description: "Search services by  specialization",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "userSort",
+                        in: "query",
+                        description: "Sort users by name, surname",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "clinicSort",
+                        in: "query",
+                        description: "Sort clinics by name",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "serviceSort",
+                        in: "query",
+                        description: "Sort services by specialization",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Paginated list of users",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        totalItems: { type: "integer" },
+                                        totalPages: { type: "integer" },
+                                        prevPage: { type: "boolean" },
+                                        nextPage: { type: "boolean" },
+                                        data: {
+                                            type: "array",
+                                            items: {
+                                                type: "object",
+                                                allOf: [
+                                                    {
+                                                        $ref: "#/components/schemas/User",
+                                                    },
+                                                    {
+                                                        type: "object",
+                                                        properties: {
+                                                            clinics: {
+                                                                type: "array",
+                                                                items: {
+                                                                    $ref: "#/components/schemas/Clinic",
+                                                                },
+                                                            },
+                                                            services: {
+                                                                type: "array",
+                                                                items: {
+                                                                    $ref: "#/components/schemas/Service",
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/clinics/{id}": {
+            get: {
+                tags: ["Users"],
+                summary: "Get user by ID",
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id user",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Data user",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/User",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            put: {
+                tags: ["Users"],
+                summary: "Update user by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id user",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                    surname: { type: "string" },
+                                    telephone: { type: "string" },
+                                },
+                                required: ["name", "surname", "telephone"],
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    "200": {
+                        description: "Updated user data",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/User",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            delete: {
+                tags: ["Users"],
+                summary: "Delete user by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id user",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "204": {
+                        description: "No content",
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not Found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
     },
     components: {
         securitySchemes: {
@@ -287,7 +1371,124 @@ const swaggerDocument: OpenAPIV3.Document = {
                 bearerFormat: "JWT",
             },
         },
+        schemas: {
+            User: {
+                type: "object",
+                properties: {
+                    _id: { type: "string" },
+                    email: { type: "string", format: "email" },
+                    role: { type: "string" },
+                    name: { type: "string" },
+                    surname: { type: "string" },
+                    telephone: { type: "string" },
+                    isActive: { type: "boolean" },
+                    isDeleted: { type: "boolean" },
+                    isVerified: { type: "boolean" },
+                    createdAt: { type: "string", format: "date-time" },
+                    updatedAt: { type: "string", format: "date-time" },
+                },
+            },
+            Clinic: {
+                type: "object",
+                properties: {
+                    _id: { type: "string" },
+                    name: { type: "string" },
+                    userIds: {
+                        type: "array",
+                        items: { type: "string" },
+                    },
+                    createdAt: { type: "string", format: "date-time" },
+                    updatedAt: { type: "string", format: "date-time" },
+                },
+            },
+            Service: {
+                type: "object",
+                properties: {
+                    _id: { type: "string" },
+                    specialization: { type: "string" },
+                    userIds: {
+                        type: "array",
+                        items: { type: "string" },
+                    },
+                    clinicIds: {
+                        type: "array",
+                        items: { type: "string" },
+                    },
+                    createdAt: { type: "string", format: "date-time" },
+                    updatedAt: { type: "string", format: "date-time" },
+                },
+            },
+        },
     },
 };
 
 export { swaggerDocument, swaggerUI };
+
+// "400": {
+//     description: "Bad request",
+//         content: {
+//         "application/json": {
+//             schema: {
+//                 type: "object",
+//                     properties: {
+//                     status: {
+//                         type: "string",
+//                     default: 400,
+//                     },
+//                     message: { type: "string" },
+//                 },
+//             },
+//         },
+//     },
+// },
+// "401": {
+//     description: "Unauthorized",
+//         content: {
+//         "application/json": {
+//             schema: {
+//                 type: "object",
+//                     properties: {
+//                     status: {
+//                         type: "string",
+//                     default: 401,
+//                     },
+//                     message: { type: "string" },
+//                 },
+//             },
+//         },
+//     },
+// },
+// "403": {
+//     description: "Forbidden",
+//         content: {
+//         "application/json": {
+//             schema: {
+//                 type: "object",
+//                     properties: {
+//                     status: {
+//                         type: "string",
+//                     default: 403,
+//                     },
+//                     message: { type: "string" },
+//                 },
+//             },
+//         },
+//     },
+// },
+// "404": {
+//     description: "Not found",
+//         content: {
+//         "application/json": {
+//             schema: {
+//                 type: "object",
+//                     properties: {
+//                     status: {
+//                         type: "string",
+//                     default: 404,
+//                     },
+//                     message: { type: "string" },
+//                 },
+//             },
+//         },
+//     },
+// },

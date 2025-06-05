@@ -143,16 +143,34 @@ class UserService {
         return user.isActive;
     }
 
-    public blockUser(user_id: string): Promise<IUser> {
-        return userRepository.blockUser(user_id);
+    public async blockUser(user_id: string): Promise<IUser> {
+        const user = await userRepository.blockUser(user_id);
+
+        if (!user) {
+            throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
+        }
+
+        return user;
     }
 
-    public unBlockUser(user_id: string): Promise<IUser> {
-        return userRepository.unBlockUser(user_id);
+    public async unBlockUser(user_id: string): Promise<IUser> {
+        const user = await userRepository.unBlockUser(user_id);
+
+        if (!user) {
+            throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
+        }
+
+        return user;
     }
 
-    public getByEmail(email: string): Promise<IUser> {
-        return userRepository.getByEmail(email);
+    public async getByEmail(email: string): Promise<IUser> {
+        const user = await userRepository.getByEmail(email);
+
+        if (!user) {
+            throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
+        }
+
+        return user;
     }
 }
 

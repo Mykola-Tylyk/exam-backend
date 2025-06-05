@@ -34,6 +34,7 @@ router.patch(
     "/:id/block",
     authMiddleware.checkAccessToken,
     authMiddleware.isAdmin,
+    commonMiddleware.isIdValidate("id"),
     userController.blockUser,
 );
 
@@ -41,6 +42,7 @@ router.patch(
     "/:id/unblock",
     authMiddleware.checkAccessToken,
     authMiddleware.isAdmin,
+    commonMiddleware.isIdValidate("id"),
     userController.unBlockUser,
 );
 
