@@ -702,6 +702,23 @@ const swaggerDocument: OpenAPIV3.Document = {
                             },
                         },
                     },
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
             },
             put: {
@@ -1045,8 +1062,8 @@ const swaggerDocument: OpenAPIV3.Document = {
         },
         "/clinics": {
             get: {
-                tags: ["Users"],
-                summary: "Get all users",
+                tags: ["Clinics"],
+                summary: "Get all clinics",
                 parameters: [
                     {
                         name: "pageSize",
@@ -1063,14 +1080,6 @@ const swaggerDocument: OpenAPIV3.Document = {
                         schema: { type: "integer", format: "int32" },
                     },
                     {
-                        name: "userSearch",
-                        in: "query",
-                        description:
-                            "Search users by name, surname, telephone, email",
-                        required: false,
-                        schema: { type: "string", format: "int32" },
-                    },
-                    {
                         name: "clinicSearch",
                         in: "query",
                         description: "Search clinics by name",
@@ -1081,13 +1090,6 @@ const swaggerDocument: OpenAPIV3.Document = {
                         name: "serviceSearch",
                         in: "query",
                         description: "Search services by  specialization",
-                        required: false,
-                        schema: { type: "string", format: "int32" },
-                    },
-                    {
-                        name: "userSort",
-                        in: "query",
-                        description: "Sort users by name, surname",
                         required: false,
                         schema: { type: "string", format: "int32" },
                     },
@@ -1108,7 +1110,7 @@ const swaggerDocument: OpenAPIV3.Document = {
                 ],
                 responses: {
                     "200": {
-                        description: "Paginated list of users",
+                        description: "Paginated list of clinics",
                         content: {
                             "application/json": {
                                 schema: {
@@ -1121,20 +1123,13 @@ const swaggerDocument: OpenAPIV3.Document = {
                                         data: {
                                             type: "array",
                                             items: {
-                                                type: "object",
                                                 allOf: [
                                                     {
-                                                        $ref: "#/components/schemas/User",
+                                                        $ref: "#/components/schemas/Clinic",
                                                     },
                                                     {
                                                         type: "object",
                                                         properties: {
-                                                            clinics: {
-                                                                type: "array",
-                                                                items: {
-                                                                    $ref: "#/components/schemas/Clinic",
-                                                                },
-                                                            },
                                                             services: {
                                                                 type: "array",
                                                                 items: {
@@ -1151,7 +1146,6 @@ const swaggerDocument: OpenAPIV3.Document = {
                             },
                         },
                     },
-
                     "404": {
                         description: "Not found",
                         content: {
@@ -1171,63 +1165,10 @@ const swaggerDocument: OpenAPIV3.Document = {
                     },
                 },
             },
-        },
-        "/clinics/{id}": {
-            get: {
-                tags: ["Users"],
-                summary: "Get user by ID",
-                parameters: [
-                    {
-                        name: "id",
-                        in: "path",
-                        description: "Id user",
-                        required: true,
-                        schema: { type: "string" },
-                    },
-                ],
-                responses: {
-                    "200": {
-                        description: "Data user",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    $ref: "#/components/schemas/User",
-                                },
-                            },
-                        },
-                    },
-                    "400": {
-                        description: "Bad request",
-                        content: {
-                            "application/json": {
-                                schema: {
-                                    type: "object",
-                                    properties: {
-                                        status: {
-                                            type: "string",
-                                            default: 400,
-                                        },
-                                        message: { type: "string" },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            put: {
-                tags: ["Users"],
-                summary: "Update user by ID",
+            post: {
+                tags: ["Clinics"],
+                summary: "Create clinic",
                 security: [{ bearerAuth: [] }],
-                parameters: [
-                    {
-                        name: "id",
-                        in: "path",
-                        description: "Id user",
-                        required: true,
-                        schema: { type: "string" },
-                    },
-                ],
                 requestBody: {
                     required: true,
                     content: {
@@ -1236,21 +1177,19 @@ const swaggerDocument: OpenAPIV3.Document = {
                                 type: "object",
                                 properties: {
                                     name: { type: "string" },
-                                    surname: { type: "string" },
-                                    telephone: { type: "string" },
                                 },
-                                required: ["name", "surname", "telephone"],
+                                required: ["name"],
                             },
                         },
                     },
                 },
                 responses: {
                     "200": {
-                        description: "Updated user data",
+                        description: "Data clinic",
                         content: {
                             "application/json": {
                                 schema: {
-                                    $ref: "#/components/schemas/User",
+                                    $ref: "#/components/schemas/Clinic",
                                 },
                             },
                         },
@@ -1291,15 +1230,566 @@ const swaggerDocument: OpenAPIV3.Document = {
                     },
                 },
             },
-            delete: {
-                tags: ["Users"],
-                summary: "Delete user by ID",
+        },
+        "/clinics/{id}": {
+            get: {
+                tags: ["Clinics"],
+                summary: "Get clinic by ID",
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id clinic",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Data clinic",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/Clinic",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            put: {
+                tags: ["Clinics"],
+                summary: "Only an admin can update clinic by ID",
                 security: [{ bearerAuth: [] }],
                 parameters: [
                     {
                         name: "id",
                         in: "path",
-                        description: "Id user",
+                        description: "Id clinic",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    name: { type: "string" },
+                                },
+                                required: ["name"],
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    "200": {
+                        description: "Updated clinic data",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/Clinic",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "403": {
+                        description: "Forbidden",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 403,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            delete: {
+                tags: ["Clinics"],
+                summary: "Only an admin can delete clinic by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id clinic",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "204": {
+                        description: "No content",
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not Found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/services": {
+            get: {
+                tags: ["Services"],
+                summary: "Get all services",
+                parameters: [
+                    {
+                        name: "pageSize",
+                        in: "query",
+                        description: "Page size",
+                        required: false,
+                        schema: { type: "integer", format: "int32" },
+                    },
+                    {
+                        name: "page",
+                        in: "query",
+                        description: "Page",
+                        required: false,
+                        schema: { type: "integer", format: "int32" },
+                    },
+                    {
+                        name: "serviceSearch",
+                        in: "query",
+                        description: "Search services by  specialization",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                    {
+                        name: "serviceSort",
+                        in: "query",
+                        description: "Sort services by specialization",
+                        required: false,
+                        schema: { type: "string", format: "int32" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Paginated list of service",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        totalItems: { type: "integer" },
+                                        totalPages: { type: "integer" },
+                                        prevPage: { type: "boolean" },
+                                        nextPage: { type: "boolean" },
+                                        data: {
+                                            type: "array",
+                                            items: {
+                                                $ref: "#/components/schemas/Service",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            post: {
+                tags: ["Services"],
+                summary: "Create service",
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    specialization: { type: "string" },
+                                    clinicId: { type: "string" },
+                                },
+                                required: ["name", "clinicId"],
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    "200": {
+                        description: "Data clinic",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/Clinic",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "/services/{id}": {
+            get: {
+                tags: ["Services"],
+                summary: "Get service by ID",
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id service",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                responses: {
+                    "200": {
+                        description: "Data service",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/Service",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            put: {
+                tags: ["Services"],
+                summary: "Only an admin can update service by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id service",
+                        required: true,
+                        schema: { type: "string" },
+                    },
+                ],
+                requestBody: {
+                    required: true,
+                    content: {
+                        "application/json": {
+                            schema: {
+                                type: "object",
+                                properties: {
+                                    specialization: { type: "string" },
+                                },
+                                required: ["name"],
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    "200": {
+                        description: "Updated service data",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: "#/components/schemas/Clinic",
+                                },
+                            },
+                        },
+                    },
+                    "400": {
+                        description: "Bad request",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 400,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "401": {
+                        description: "Unauthorized",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 401,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "403": {
+                        description: "Forbidden",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 403,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "404": {
+                        description: "Not found",
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    properties: {
+                                        status: {
+                                            type: "string",
+                                            default: 404,
+                                        },
+                                        message: { type: "string" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            delete: {
+                tags: ["Services"],
+                summary: "Only an admin can delete service by ID",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: "id",
+                        in: "path",
+                        description: "Id service",
                         required: true,
                         schema: { type: "string" },
                     },
@@ -1423,72 +1913,3 @@ const swaggerDocument: OpenAPIV3.Document = {
 };
 
 export { swaggerDocument, swaggerUI };
-
-// "400": {
-//     description: "Bad request",
-//         content: {
-//         "application/json": {
-//             schema: {
-//                 type: "object",
-//                     properties: {
-//                     status: {
-//                         type: "string",
-//                     default: 400,
-//                     },
-//                     message: { type: "string" },
-//                 },
-//             },
-//         },
-//     },
-// },
-// "401": {
-//     description: "Unauthorized",
-//         content: {
-//         "application/json": {
-//             schema: {
-//                 type: "object",
-//                     properties: {
-//                     status: {
-//                         type: "string",
-//                     default: 401,
-//                     },
-//                     message: { type: "string" },
-//                 },
-//             },
-//         },
-//     },
-// },
-// "403": {
-//     description: "Forbidden",
-//         content: {
-//         "application/json": {
-//             schema: {
-//                 type: "object",
-//                     properties: {
-//                     status: {
-//                         type: "string",
-//                     default: 403,
-//                     },
-//                     message: { type: "string" },
-//                 },
-//             },
-//         },
-//     },
-// },
-// "404": {
-//     description: "Not found",
-//         content: {
-//         "application/json": {
-//             schema: {
-//                 type: "object",
-//                     properties: {
-//                     status: {
-//                         type: "string",
-//                     default: 404,
-//                     },
-//                     message: { type: "string" },
-//                 },
-//             },
-//         },
-//     },
-// },
